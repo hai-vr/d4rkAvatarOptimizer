@@ -9,13 +9,27 @@ using UnityEditor.Animations;
 using d4rkpl4y3r.AvatarOptimizer;
 using d4rkpl4y3r.AvatarOptimizer.Util;
 using d4rkpl4y3r.AvatarOptimizer.Extensions;
+#if HVR___STUB
 using VRC.SDK3.Avatars.Components;
 using VRC.Dynamics;
 using VRC.SDKBase.Validation.Performance;
+#endif
 
 using Type = System.Type;
 using MaterialSlot = d4rkAvatarOptimizer.MaterialSlot;
 using Settings = d4rkAvatarOptimizer.Settings;
+
+#if HVR___STUB
+#else
+public enum PerformanceRating
+{
+    Excellent,
+    Good,
+    Medium,
+    Poor,
+    VeryPoor,
+}
+#endif
 
 [CustomEditor(typeof(d4rkAvatarOptimizer))]
 public class d4rkAvatarOptimizerEditor : Editor
@@ -492,6 +506,7 @@ public class d4rkAvatarOptimizerEditor : Editor
                 }
                 Profiler.EndSection();
             }
+#if HVR___STUB
             if (Foldout("Phys Bone Dependencies", ref optimizer.DebugShowPhysBoneDependencies))
             {
                 Profiler.StartSection("Phys Bone Dependencies");
@@ -506,6 +521,7 @@ public class d4rkAvatarOptimizerEditor : Editor
                     }
                 }
             }
+#endif
             if (Foldout("Unused Components", ref optimizer.DebugShowUnusedComponents))
             {
                 Profiler.StartSection("Unused Components");
@@ -576,6 +592,7 @@ public class d4rkAvatarOptimizerEditor : Editor
 
     private bool Validate()
     {
+#if HVR___STUB
         var avDescriptor = optimizer.GetComponent<VRCAvatarDescriptor>();
 
         if (avDescriptor == null)
@@ -599,6 +616,7 @@ public class d4rkAvatarOptimizerEditor : Editor
             }
             return false;
         }
+#endif
 
         if (optimizer.name.EndsWith("(OptimizedCopy)"))
         {
@@ -612,6 +630,7 @@ public class d4rkAvatarOptimizerEditor : Editor
             "Please update your SDK to the latest version.", MessageType.Error);
         #endif
 
+#if HVR___STUB
         if (optimizer.UseRingFingerAsFootCollider)
         {
             if (avDescriptor.collider_footL.transform == null || avDescriptor.collider_footR.transform == null
@@ -660,6 +679,7 @@ public class d4rkAvatarOptimizerEditor : Editor
             if (Event.current.type == EventType.MouseDown && GUILayoutUtility.GetLastRect().Contains(Event.current.mousePosition))
                 Application.OpenURL("https://github.com/d4rkc0d3r/d4rkAvatarOptimizer/issues");
         }
+#endif
 
         var exclusions = optimizer.GetAllExcludedTransforms();
 
@@ -827,6 +847,7 @@ public class d4rkAvatarOptimizerEditor : Editor
 
     private static void AssignNewAvatarIDIfEmpty()
     {
+#if HVR___STUB
         var avDescriptor = optimizer.GetComponent<VRCAvatarDescriptor>();
         if (avDescriptor == null)
             return;
@@ -838,6 +859,7 @@ public class d4rkAvatarOptimizerEditor : Editor
         if (!string.IsNullOrEmpty(pm.blueprintId))
             return;
         pm.AssignId();
+#endif
     }
 
     private d4rkAvatarOptimizer lastSelected = null;

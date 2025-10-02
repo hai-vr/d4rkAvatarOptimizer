@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+#if HVR___STUB
 using VRC.SDK3.Dynamics.Contact.Components;
 using VRC.SDK3.Dynamics.PhysBone.Components;
+#endif
 using System.Text.RegularExpressions;
 using Array = System.Array;
 
@@ -17,14 +19,18 @@ using UnityEditor.Animations;
 using d4rkpl4y3r.AvatarOptimizer;
 using d4rkpl4y3r.AvatarOptimizer.Util;
 using d4rkpl4y3r.AvatarOptimizer.Extensions;
+#if HVR___STUB
 using VRC.Dynamics;
 using VRC.SDK3.Avatars.Components;
+#endif
 
 using Math = System.Math;
 using Type = System.Type;
 using Path = System.IO.Path;
 using AnimationPath = System.ValueTuple<string, string, System.Type>;
+#if HVR___STUB
 using BlendableLayer = VRC.SDKBase.VRC_AnimatorLayerControl.BlendableLayer;
+#endif
 #endif
 
 [HelpURL("https://github.com/d4rkc0d3r/d4rkAvatarOptimizer/blob/main/README.md")]
@@ -157,7 +163,12 @@ public class d4rkAvatarOptimizer : MonoBehaviour
                 ShaderAnalyzer.ParseAndCacheAllShaders(FindAllUsedMaterials().Select(m => m.shader), true,
                     (done, total) => DisplayProgressBar($"Parsing Shaders ({done}/{total})", 0.05f + 0.15f * done / total));
             }
+            
+#if HVR___STUB
             physBonesToDisable = FindAllPhysBonesToDisable();
+#else
+            physBonesToDisable = new Dictionary<string, List<string>>();
+#endif
             Profiler.StartNextSection("ConvertStaticMeshesToSkinnedMeshes()");
             ConvertStaticMeshesToSkinnedMeshes();
             Profiler.StartNextSection("CalculateUsedBlendShapePaths()");
@@ -1141,6 +1152,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
 
     public bool UsesAnyLayerMasks()
     {
+#if HVR___STUB
         var avDescriptor = GetComponent<VRCAvatarDescriptor>();
         if (avDescriptor == null)
             return false;
@@ -1153,6 +1165,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
             if (controller.layers.Any(layer => layer.avatarMask != null))
                 return true;
         }
+#endif
         return false;
     }
 
@@ -1240,6 +1253,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
                 mergedMeshes.Remove(meshRenderer);
             }
         }
+#if HVR___STUB
         var avDescriptor = GetComponent<VRCAvatarDescriptor>();
         foreach (var subList in matchedSkinnedMeshes)
         {
@@ -1253,6 +1267,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
             subList[0] = subList[index];
             subList[index] = oldFirst;
         }
+#endif
         matchedSkinnedMeshes = matchedSkinnedMeshes
             .OrderBy(subList => subList[0] is SkinnedMeshRenderer || subList[0] is MeshRenderer ? 0 : 1)
             .ThenByDescending(subList => subList.Count).ToList();
@@ -1382,6 +1397,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
                     }
                     animatableBindings[componentType].Add("ComponentExists");
                 }
+#if HVR___STUB
                 if (targetObject.TryGetComponent(out VRCStation station)) {
                     // even if box collider doesn't exist right now, the station script will create one at runtime
                     var boxColliderType = typeof(BoxCollider);
@@ -1394,6 +1410,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
                         "m_Size.x", "m_Size.y", "m_Size.z"
                     });
                 }
+#endif
             }
             cache_IsAnimatableBinding[binding.path] = animatableBindings;
         }
@@ -1479,6 +1496,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
                     SetFloatCurve(newClip, otherBinding, curve);
                 }
             }
+#if HVR___STUB
             bool addPhysBoneCurves = (binding.type == typeof(SkinnedMeshRenderer) && binding.propertyName == "m_Enabled")
                 || (binding.type == typeof(GameObject) && binding.propertyName == "m_IsActive");
             if (addPhysBoneCurves && physBonesToDisable.TryGetValue(binding.path, out var physBonePaths))
@@ -1493,6 +1511,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
                     changed = true;
                 }
             }
+#endif
         }
         foreach (var binding in AnimationUtility.GetObjectReferenceCurveBindings(clip))
         {
@@ -1577,6 +1596,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
     
     private void FixAllAnimationPaths()
     {
+#if HVR___STUB
         var avDescriptor = GetComponent<VRCAvatarDescriptor>();
         if (avDescriptor == null)
             return;
@@ -1700,6 +1720,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
         Profiler.StartSection("AssetDatabase.SaveAssets()");
         AssetDatabase.SaveAssets();
         Profiler.EndSection();
+#endif
     }
 
     private HashSet<(string path, Type type)> GetAllCurveBindings(AnimatorStateMachine stateMachine)
@@ -1733,9 +1754,12 @@ public class d4rkAvatarOptimizer : MonoBehaviour
     {
         if (cache_AnalyzeFXLayerMergeAbility != null)
             return cache_AnalyzeFXLayerMergeAbility;
+#if HVR___STUB
         var fxLayer = GetFXLayer();
         if (fxLayer == null)
+#endif
             return new List<List<string>>();
+#if HVR___STUB
         var avDescriptor = GetComponent<VRCAvatarDescriptor>();
 
         var fxLayerLayers = GetFXLayerLayers();
@@ -2120,6 +2144,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
             errorMessages[i] = errorMessages[i].Distinct().ToList();
         }
         return cache_AnalyzeFXLayerMergeAbility = errorMessages;
+#endif
     }
 
     public bool IsMergeableFXLayer(int layerIndex)
@@ -2134,9 +2159,12 @@ public class d4rkAvatarOptimizer : MonoBehaviour
     {
         if (cache_FindUselessFXLayers != null)
             return cache_FindUselessFXLayers;
+#if HVR___STUB
         var fxLayer = GetFXLayer();
         if (fxLayer == null || !OptimizeFXLayer)
+#endif
             return new HashSet<int>();
+#if HVR___STUB
         Profiler.StartSection("FindUselessFXLayers()");
         var avDescriptor = GetComponent<VRCAvatarDescriptor>();
 
@@ -2234,6 +2262,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
         }
         Profiler.EndSection();
         return cache_FindUselessFXLayers = uselessLayers;
+#endif
     }
 
     private HashSet<AnimationClip> cache_GetAllUsedFXLayerAnimationClips = null;
@@ -2299,6 +2328,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
         if (cache_GetAllUsedAnimationClips != null)
             return cache_GetAllUsedAnimationClips;
         var usedClips = new HashSet<AnimationClip>();
+#if HVR___STUB
         var avDescriptor = GetComponent<VRCAvatarDescriptor>();
         if (avDescriptor == null)
             return usedClips;
@@ -2318,6 +2348,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
             usedClips.UnionWith(controller.animationClips);
         }
         usedClips.UnionWith(GetAllUsedFXLayerAnimationClips());
+#endif
         return cache_GetAllUsedAnimationClips = usedClips;
     }
 
@@ -2335,6 +2366,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
         return cache_GetAllUsedFXLayerCurveBindings = result;
     }
 
+#if HVR___STUB
     private Dictionary<VRCPhysBoneBase, HashSet<Object>> cache_FindAllPhysBoneDependencies = null;
     public Dictionary<VRCPhysBoneBase, HashSet<Object>> FindAllPhysBoneDependencies()
     {
@@ -2488,6 +2520,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
         }
         return result;
     }
+#endif
 
     private Dictionary<(string path, int index), HashSet<Material>> cache_FindAllMaterialSwapMaterials;
     public Dictionary<(string path, int index), HashSet<Material>> FindAllMaterialSwapMaterials()
@@ -2560,11 +2593,15 @@ public class d4rkAvatarOptimizer : MonoBehaviour
 
     public AnimatorController GetFXLayer()
     {
+#if HVR___STUB
         var avDescriptor = GetComponent<VRCAvatarDescriptor>();
         var baseLayerCount = IsHumanoid() ? 5 : 3;
         if (avDescriptor == null || avDescriptor.baseAnimationLayers.Length != baseLayerCount)
             return null;
         return avDescriptor.baseAnimationLayers[baseLayerCount - 1].animatorController as AnimatorController;
+#else
+        return null;
+#endif
     }
 
     private AnimatorControllerLayer[] cache_GetFXLayerLayers = null;
@@ -2580,6 +2617,8 @@ public class d4rkAvatarOptimizer : MonoBehaviour
     {
         usedBlendShapes.Clear();
         blendShapesToBake.Clear();
+        
+#if HVR___STUB
         var avDescriptor = GetComponent<VRCAvatarDescriptor>();
         if (avDescriptor != null)
         {
@@ -2641,6 +2680,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
                 }
             }
         }
+#endif
         foreach (var skinnedMeshRenderer in GetComponentsInChildren<SkinnedMeshRenderer>(true))
         {
             var mesh = skinnedMeshRenderer.sharedMesh;
@@ -2679,10 +2719,13 @@ public class d4rkAvatarOptimizer : MonoBehaviour
 
     public List<List<(string blendshape, float value)>> FindMergeableBlendShapes(IEnumerable<Renderer> mergedMeshBlob)
     {
+#if HVR___STUB
         var avDescriptor = GetComponent<VRCAvatarDescriptor>();
         var fxLayer = GetFXLayer();
         if (avDescriptor == null || fxLayer == null)
+#endif
             return new List<List<(string blendshape, float value)>>();
+#if HVR___STUB
         var exclusions = GetAllExcludedTransforms();
         var validPaths = new HashSet<string>();
         var blendShapeNameToID = new Dictionary<string, int>();
@@ -2819,6 +2862,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
         }
         mergeableBlendShapes.RemoveAll(x => x.Count == 1);
         return mergeableBlendShapes.Select(x => x.OrderByDescending(y => y.value).Select(z => (blendShapeIDToName[z.blendshapeID], z.value)).ToList()).ToList();
+#endif
     }
 
     private void NormalizeBlendShapeValues(List<(int blendshape, float value)> blendShapeValues)
@@ -2991,10 +3035,11 @@ public class d4rkAvatarOptimizer : MonoBehaviour
                 behaviourToggles.Add(binding.path);
             }
         }
-
         var alwaysDisabledBehaviours = new HashSet<Component>(GetComponentsInChildren<Behaviour>(true)
             .Where(b => b != null && !b.enabled)
+#if HVR___STUB
             .Where(b => !(b is VRCPhysBoneColliderBase))
+#endif
             .Where(b => !behaviourToggles.Contains(GetPathToRoot(b))));
 
         alwaysDisabledBehaviours.UnionWith(GetComponentsInChildren<Renderer>(true)
@@ -3006,6 +3051,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
         
         var exclusions = GetAllExcludedTransforms();
 
+#if HVR___STUB
         foreach(var entry in FindAllPhysBoneDependencies())
         {
             if (exclusions.Contains(entry.Key.transform))
@@ -3023,6 +3069,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
 
         alwaysDisabledBehaviours.UnionWith(GetComponentsInChildren<VRCPhysBoneColliderBase>(true)
             .Where(c => !usedPhysBoneColliders.Contains(c)));
+#endif
 
         alwaysDisabledBehaviours.RemoveWhere(c => exclusions.Contains(c.transform) || c.transform == transform);
 
@@ -3032,11 +3079,15 @@ public class d4rkAvatarOptimizer : MonoBehaviour
     private HashSet<Transform> cache_FindAllMovingTransforms = null;
     private HashSet<Transform> FindAllMovingTransforms()
     {
+#if HVR___STUB
         if (cache_FindAllMovingTransforms != null)
             return cache_FindAllMovingTransforms;
         var avDescriptor = GetComponent<VRCAvatarDescriptor>();
         if (avDescriptor == null)
+#endif
             return new HashSet<Transform>();
+            
+#if HVR___STUB
         var transforms = new HashSet<Transform>();
 
         if (avDescriptor.enableEyeLook)
@@ -3152,18 +3203,23 @@ public class d4rkAvatarOptimizer : MonoBehaviour
         transforms.UnionWith(transform.GetAllDescendants().Where(t => t.localScale != Vector3.one));
 
         return cache_FindAllMovingTransforms = transforms;
+#endif
     }
 
     private HashSet<Transform> cache_FindAllUnmovingTransforms = null;
     public  HashSet<Transform> FindAllUnmovingTransforms()
     {
+#if HVR___STUB
         if (cache_FindAllUnmovingTransforms != null)
             return cache_FindAllUnmovingTransforms;
         var avDescriptor = GetComponent<VRCAvatarDescriptor>();
         if (avDescriptor == null)
+#endif
             return new HashSet<Transform>();
+#if HVR___STUB
         var moving = FindAllMovingTransforms();
         return cache_FindAllUnmovingTransforms = new HashSet<Transform>(transform.GetAllDescendants().Where(t => !moving.Contains(t)));
+#endif
     }
 
     private bool IsDPSPenetratorTipLight(Light light)
@@ -4411,7 +4467,9 @@ public class d4rkAvatarOptimizer : MonoBehaviour
         {
             transformFromOldPath[GetPathToRoot(t)] = t;
         }
+#if HVR___STUB
         var avDescriptor = GetComponent<VRCAvatarDescriptor>();
+#endif
         var combinableMeshList = FindPossibleSkinnedMeshMerges();
         oldPathToMergedPaths.Clear();
         oldPathToMergedPath.Clear();
@@ -4627,10 +4685,12 @@ public class d4rkAvatarOptimizer : MonoBehaviour
                         (GetPathToRoot(NaNimationBone), key, typeof(Transform)));
                     var curveBinding = EditorCurveBinding.FloatCurve(newPath, typeof(SkinnedMeshRenderer), "m_UpdateWhenOffscreen");
                     constantAnimatedValuesToAdd[curveBinding] = 0f;
+#if HVR___STUB
                     targetBounds.Encapsulate(toLocal.MultiplyPoint3x4(avDescriptor.ViewPosition + Vector3.forward * 0.3f + Vector3.up * 0.2f));
                     targetBounds.Encapsulate(toLocal.MultiplyPoint3x4(avDescriptor.ViewPosition + Vector3.forward * 0.3f - Vector3.up * 0.2f));
                     targetBounds.Encapsulate(toLocal.MultiplyPoint3x4(avDescriptor.ViewPosition + Vector3.forward * 0.3f + Vector3.right * 0.2f));
                     targetBounds.Encapsulate(toLocal.MultiplyPoint3x4(avDescriptor.ViewPosition + Vector3.forward * 0.3f - Vector3.right * 0.2f));
+#endif
                 }
                 else if (basicMergedMeshes.Count > 1 && MergeSkinnedMeshesWithShaderToggle)
                 {
@@ -4924,6 +4984,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
             
             var targetRenderer = combinableSkinnedMeshes[0];
 
+#if HVR___STUB
             if (avDescriptor.customEyeLookSettings.eyelidType == VRCAvatarDescriptor.EyelidType.Blendshapes
                 && avDescriptor.customEyeLookSettings.eyelidsSkinnedMesh != null)
             {
@@ -4960,6 +5021,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
                     avDescriptor.MouthOpenBlendShapeName = CalculateNewBlendShapeName(avDescriptor.MouthOpenBlendShapeName);
                 }
             }
+#endif
 
             var sameAnimatedProperties = GetSameAnimatedPropertiesOnMergedMesh(newPath);
             if (basicMergedMeshes.Count > 1 && MergeSkinnedMeshesWithShaderToggle) {
@@ -5120,12 +5182,14 @@ public class d4rkAvatarOptimizer : MonoBehaviour
         var hardCodedExclusions = new List<string>() {
             "_VirtualLens_Root",
         }.Select(s => GetTransformFromPath(s)).ToList();
+#if HVR___STUB
         hardCodedExclusions.AddRange(transform.GetComponentsInChildren<VRCContactSender>(true)
             .Where(c => c.collisionTags.Any(t => t == "superneko.realkiss.contact.mouth"))
             .Select(c => c.transform.parent)
             .Where(t => t != null)
             .Select(t => t.Cast<Transform>().FirstOrDefault(child => child.TryGetComponent(out SkinnedMeshRenderer _)))
             .Where(t => t != null));
+#endif
         hardCodedExclusions.AddRange(FindAllPenetrators().Select(p => p.transform));
         foreach (var excludedTransform in ExcludeTransforms.Concat(hardCodedExclusions)) {
             if (excludedTransform == null)
@@ -5207,11 +5271,13 @@ public class d4rkAvatarOptimizer : MonoBehaviour
                 continue;
             if (component is AudioSource audio)
             {
+#if HVR___STUB
                 var vrcAudioSource = audio.GetComponent<VRCSpatialAudioSource>();
                 if (vrcAudioSource != null)
                 {
                     DestroyImmediate(vrcAudioSource);
                 }
+#endif
             }
             DestroyImmediate(component);
         }
@@ -5233,6 +5299,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
             .Select(a => a.transform.Find("Armature")).Where(t => t != null));
         used.UnionWith(transform.Cast<Transform>().Where(t => t.name.StartsWithSimple("NaNimation ")));
 
+#if HVR___STUB
         foreach (var contact in GetComponentsInChildren<ContactBase>(true))
         {
             used.Add(contact.GetRootTransform());
@@ -5251,6 +5318,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
             used.Add(collider.GetRootTransform());
             used.Add(collider.GetRootTransform().parent);
         }
+#endif
 
         foreach (var c in GetComponentsInChildren<Component>(true).Where(c => c != null && !(c is Transform)))
         {
@@ -5262,6 +5330,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
             used.UnionWith(FindReferencedTransforms(c));
         }
 
+#if HVR___STUB
         // the vrc finger colliders depend on their relative position to their parent, so we need to keep their parents around too
         var avDescriptor = GetComponent<VRCAvatarDescriptor>();
         var fingerColliders = new List<VRCAvatarDescriptor.ColliderConfig>() {
@@ -5275,6 +5344,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
             avDescriptor.collider_fingerLittleR,
         }.Select(c => c.transform).Where(t => t != null);
         used.UnionWith(fingerColliders.Select(c => c.parent).Where(t => t != null));
+#endif
 
         used.UnionWith(FindAllGameObjectTogglePaths().Select(p => GetTransformFromPath(p)).Where(t => t != null));
 
@@ -5314,6 +5384,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
 
     private void MoveRingFingerColliderToFeet()
     {
+#if HVR___STUB
         if (!UseRingFingerAsFootCollider)
             return;
         var avDescriptor = GetComponent<VRCAvatarDescriptor>();
@@ -5352,6 +5423,7 @@ public class d4rkAvatarOptimizer : MonoBehaviour
 
         // disable collider foldout in the inspector because it resets the collider transform
         EditorPrefs.SetBool("VRCSDK3_AvatarDescriptorEditor3_CollidersFoldout", false);
+#endif
     }
 
     private void ConvertStaticMeshesToSkinnedMeshes()

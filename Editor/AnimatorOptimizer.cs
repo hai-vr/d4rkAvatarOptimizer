@@ -6,9 +6,11 @@ using d4rkpl4y3r.AvatarOptimizer.Extensions;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
+#if HVR___STUB
 using VRC.SDK3.Avatars.Components;
 using VRC.SDKBase;
 using BlendableLayer = VRC.SDKBase.VRC_AnimatorLayerControl.BlendableLayer;
+#endif
 
 namespace d4rkpl4y3r.AvatarOptimizer
 {
@@ -155,6 +157,7 @@ namespace d4rkpl4y3r.AvatarOptimizer
 
         private void FixLayerControlBehavioursInStateMachine(AnimatorStateMachine stateMachine)
         {
+#if HVR___STUB
             var behaviours = stateMachine.behaviours;
             for (int i = 0; i < behaviours.Length; i++)
             {
@@ -174,8 +177,10 @@ namespace d4rkpl4y3r.AvatarOptimizer
                     FixLayerControlBehaviour(behaviours[j]);
                 }
             }
+#endif
         }
 
+#if HVR___STUB
         private void FixLayerControlBehaviour(StateMachineBehaviour behaviour)
         {
             if (behaviour is VRC_AnimatorLayerControl layerControl)
@@ -187,6 +192,7 @@ namespace d4rkpl4y3r.AvatarOptimizer
                 }
             }
         }
+#endif
 
         private AnimationClip CloneAndFlipCurves(AnimationClip clip)
         {
@@ -609,6 +615,7 @@ namespace d4rkpl4y3r.AvatarOptimizer
             }
             switch (n)
             {
+#if HVR___STUB
                 case VRCAnimatorLayerControl l:
                     {
                         var o = old as VRCAnimatorLayerControl;
@@ -699,6 +706,7 @@ namespace d4rkpl4y3r.AvatarOptimizer
                         l.outputParamHash = o.outputParamHash;
                         break;
                     }
+#endif
                 default:
                     {
                         EditorUtility.CopySerialized(old, n);
